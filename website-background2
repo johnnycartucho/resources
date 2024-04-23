@@ -401,16 +401,16 @@ function updateParticle(i) {
 }
 
 function drawParticle(x, y, x2, y2, life, ttl, radius, hue) {
-  ctx.a.save();
-  ctx.a.lineCap = 'round';
-  ctx.a.lineWidth = radius;
-  ctx.a.strokeStyle = `hsla(${hue},100%,60%,${fadeInOut(life, ttl)})`;
-  ctx.a.beginPath();
-  ctx.a.moveTo(x, y);
-  ctx.a.lineTo(x2, y2);
-  ctx.a.stroke()
-  ctx.a.closePath();
-  ctx.a.restore();
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineWidth = radius;
+  ctx.strokeStyle = `hsla(${hue},100%,60%,${fadeInOut(life, ttl)})`;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x2, y2);
+  ctx.stroke()
+  ctx.closePath();
+  ctx.restore();
 }
 
 function checkBounds(x, y) {
@@ -424,77 +424,35 @@ function checkBounds(x, y) {
 
 function createCanvas() {
   container = document.querySelector('.content--canvas');
-	canvas = {
-		a: document.createElement('canvas'),
-		b: document.createElement('canvas')
-	};
-	canvas.b.style = `
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-	`;
-	container.appendChild(canvas.b);
-	ctx = {
-		a: canvas.a.getContext('2d'),
-		b: canvas.b.getContext('2d')
-  };
+  canvas = document.createElement('canvas');
+  ctx = canvas.getContext('2d');
+  container.appendChild(canvas);
   center = [];
 }
 
 function resize() {
-	const { innerWidth, innerHeight } = window;
-	
-	canvas.a.width = innerWidth;
-  canvas.a.height = innerHeight;
-
-  ctx.a.drawImage(canvas.b, 0, 0);
-
-	canvas.b.width = innerWidth;
-  canvas.b.height = innerHeight;
+  const { innerWidth, innerHeight } = window;
   
-  ctx.b.drawImage(canvas.a, 0, 0);
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
 
-  center[0] = 1 * canvas.a.width;
-  center[1] = 1 * canvas.a.height;
-}
-
-function renderGlow() {
-  ctx.b.save();
-  ctx.b.filter = 'blur(8px) brightness(200%)';
-  ctx.b.globalCompositeOperation = 'lighter';
-  ctx.b.drawImage(canvas.a, 0, 0);
-  ctx.b.restore();
-
-  ctx.b.save();
-  ctx.b.filter = 'blur(4px) brightness(200%)';
-  ctx.b.globalCompositeOperation = 'lighter';
-  ctx.b.drawImage(canvas.a, 0, 0);
-  ctx.b.restore();
-}
-
-function renderToScreen() {
-  ctx.b.save();
-  ctx.b.globalCompositeOperation = 'lighter';
-  ctx.b.drawImage(canvas.a, 0, 0);
-  ctx.b.restore();
+  center[0] = 0.5 * canvas.width;
+  center[1] = 0.5 * canvas.height;
 }
 
 function draw() {
   tick++;
 
-  ctx.a.clearRect(0, 0, canvas.a.width, canvas.a.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.b.fillStyle = backgroundColor;
-  ctx.b.fillRect(0, 0, canvas.a.width, canvas.a.height);
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   drawParticles();
-  renderGlow();
-  renderToScreen();
 
-	window.requestAnimationFrame(draw);
+  window.requestAnimationFrame(draw);
 }
+
 
 window.addEventListener('load', setup);
 window.addEventListener('resize', resize);
